@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invoice - SRIPRIYA TEX</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <h1>SRIPRIYA TEX</h1>
+    <p>3/121-A, Poothottam, Pallipalayam, Mangalam(Via)</p>
+    <p>Poomalur(PO), Tiruppur (Dt) - 641663</p>
+    <p>GSTIN: 33AFQPV2570M1ZR &nbsp; | &nbsp; Mobile: 8870620206</p>
+  </div>
+
+  <div class="invoice-form">
+    <div class="section">
+      <label>Invoice No:</label>
+      <input type="text" id="invoiceNo" />
+      
+      <label>Invoice Date:</label>
+      <input type="date" id="invoiceDate" />
+    </div>
+
+    <div class="section">
+      <label>Customer Name:</label>
+      <input type="text" id="customerName" />
+    </div>
+
+    <!-- Two side-by-side address boxes -->
+    <div class="address-container">
+      <div class="address-box">
+        <label>Billing Address:</label>
+        <textarea id="billingAddress"></textarea>
+      </div>
+      <div class="address-box">
+        <label>Shipped To Address:</label>
+        <textarea id="shippedToAddress"></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <label>GST Number:</label>
+      <input type="text" id="customerGST" />
+    </div>
+
+    <h3>Goods Table</h3>
+    <table id="invoiceTable">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Package</th>
+          <th>Description of Goods</th>
+          <th>HSN Code</th>
+          <th>Qty (Kg/Mtr)</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr>
+          <td>1</td>
+          <td><input type="text" oninput="calculateRow(this.parentElement.parentElement)" /></td>
+          <td><input type="text" oninput="calculateRow(this.parentElement.parentElement)" /></td>
+          <td><input type="text" oninput="calculateRow(this.parentElement.parentElement)" /></td>
+          <td><input type="number" value="0" oninput="calculateRow(this.parentElement.parentElement)" /></td>
+          <td><input type="number" value="0" oninput="calculateRow(this.parentElement.parentElement)" /></td>
+          <td><input type="number" value="0" readonly /></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <button class="add-row-btn" onclick="addRow()">Add Row</button>
+    <button onclick="removeRow()">Remove Row</button>
+    
+    <div class="section totals">
+      <div class="total-row">
+        <label>Total Amount:</label>
+        <input type="number" id="totalAmount" readonly />
+      </div>
+      <div class="total-row">
+        <label>CGST (2.5%):</label>
+        <input type="number" id="cgstAmount" readonly />
+      </div>
+      <div class="total-row">
+        <label>SGST (2.5%):</label>
+        <input type="number" id="sgstAmount" readonly />
+      </div>
+      <div class="total-row">
+        <label>Round Off:</label>
+        <input type="number" id="roundOff" value="0" oninput="calculateTotals()" />
+      </div>
+      <div class="total-row">
+        <label>Grand Total:</label>
+        <input type="number" id="grandTotal" readonly />
+      </div>
+      <div class="total-row">
+        <label>Total in Words:</label>
+        <textarea id="amountInWords" readonly></textarea>
+      </div>
+    </div>
+
+    <!-- Declaration / Goods Description Section (read-only) -->
+    <div class="declaration">
+      <label>Declaration / Goods Description:</label>
+      <textarea id="declarationText" readonly>
+DECLARATION
+Certified that the particulars given above are correct and the amount indicated represents the price actually charged and that there is no flow additional consideration directly or indirectly from the buyer.
+      </textarea>
+    </div>
+
+    <!-- Last Authorized By (aligned right on print for signature) -->
+    <div class="last-authorized">
+      <label>Last Authorized By:</label>
+      <input type="text" id="authorizedBy" />
+    </div>
+
+    <!-- Grouped buttons for PDF generation and Print -->
+    <div class="button-group">
+      <button class="blue-btn" onclick="generatePDF()">Generate Invoice PDF</button>
+      <button class="blue-btn" onclick="window.print()">Print Invoice</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

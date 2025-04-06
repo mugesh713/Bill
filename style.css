@@ -1,0 +1,226 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding-top: 220px; /* Accommodate fixed header */
+    background: #f8f8f8;
+  }
+  
+  .header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #ffffff;
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 2px solid #ccc;
+    z-index: 1000;
+  }
+  
+  .header h1 {
+    margin: 0;
+    color: #2c3e50;
+  }
+  
+  .header p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .invoice-form {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .section label {
+    width: 150px;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .section input,
+  .section textarea,
+  .section select {
+    width: 300px;
+    padding: 5px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+  }
+  
+  /* Address container for Billing and Shipped To */
+  .address-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .address-box {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .address-box label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .address-box textarea {
+    width: 100%;
+    padding: 5px;
+    resize: vertical;
+  }
+  
+  .totals {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    margin-top: 20px;
+  }
+  
+  .total-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .total-row label {
+    width: 150px;
+    font-weight: bold;
+  }
+  
+  .total-row input,
+  .total-row textarea {
+    width: 300px;
+    padding: 5px;
+  }
+  
+  /* Declaration section */
+  .declaration {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .declaration label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .declaration textarea {
+    width: 100%;
+    height: 80px;
+    padding: 5px;
+    resize: vertical;
+  }
+  
+  /* Last Authorized section */
+  .last-authorized {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .last-authorized label {
+    width: 150px;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .last-authorized input {
+    width: 300px;
+    padding: 5px;
+  }
+  
+  /* Table styles */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  
+  table th, table td {
+    border: 1px solid #aaa;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  /* Orange Add Row button */
+  .add-row-btn {
+    padding: 3px 5px;
+    background-color: #bdb8b8;
+    color: rgb(17, 16, 16);
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .add-row-btn:hover {
+    background-color: #232222;
+  }
+  
+  /* Blue buttons for Generate PDF and Print, grouped side by side */
+  .blue-btn {
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  
+  .blue-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .button-group {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Print Styles */
+  @media print {
+    /* Hide buttons on print */
+    button, .blue-btn, .add-row-btn, .button-group {
+      display: none;
+    }
+    /* Display inputs and textareas as plain text */
+    input, textarea, select {
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      outline: none;
+      -webkit-appearance: none;
+      font-size: 10px;
+      padding: 2px;
+    }
+    /* Reduce overall spacing for a compact print layout */
+    .invoice-form {
+      padding: 0;
+      margin: 0;
+    }
+    table th, table td {
+      padding: 4px;
+      font-size: 10px;
+    }
+    /* Align Last Authorized field to the right for signature */
+    .last-authorized {
+      width: 100%;
+      text-align: right;
+    }
+  }
+  
