@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TAX INVOICE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      color: #000;
+      font-size: 12px;
+      background: #f8f8f8;
+    }
+    .invoice-container {
+      max-width: 800px;
+      margin: 0 auto;
+      border: 1px solid #000;
+      padding: 15px;
+      box-sizing: border-box;
+      background: white;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      text-decoration: underline;
+    }
+    .header h2 {
+      margin: 3px 0;
+      font-size: 16px;
+    }
+    .header p {
+      margin: 2px 0;
+      font-size: 12px;
+    }
+    .gst-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-weight: bold;
+      border: 1px solid #000;
+      padding: 5px;
+      font-size: 12px;
+    }
+    .divider {
+      border-top: 1px solid #000;
+      margin: 8px 0;
+    }
+    .invoice-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .invoice-info table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .invoice-info td {
+      padding: 3px;
+      vertical-align: top;
+      font-size: 12px;
+    }
+    .address-section {
+      display: flex;
+      margin-bottom: 10px;
+      gap: 15px;
+    }
+    .address-box {
+      flex: 1;
+      border: 1px solid #000;
+      padding: 8px;
+      min-height: 100px;
+      box-sizing: border-box;
+      font-size: 12px;
+    }
+    .address-box p {
+      margin: 3px 0;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      table-layout: fixed;
+      font-size: 12px;
+    }
+    .items-table th, .items-table td {
+      border: 1px solid #000;
+      padding: 5px;
+      text-align: left;
+    }
+    .items-table th {
+      background-color: #f0f0f0;
+      font-size: 12px;
+    }
+    .items-table input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      box-sizing: border-box;
+      font-size: 12px;
+    }
+    .qty-details {
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .qty-details input {
+      width: 80px;
+      text-align: right;
+    }
+    .totals-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .totals-table td {
+      padding: 5px;
+    }
+    .totals-table .label {
+      text-align: right;
+      padding-right: 15px;
+      font-weight: bold;
+      width: 30%;
+    }
+    .totals-table input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: right;
+      font-size: 12px;
+    }
+    .amount-in-words {
+      margin: 10px 0;
+      padding: 8px;
+      border: 1px solid #000;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .amount-in-words input {
+      width: calc(100% - 60px);
+      border: none;
+      background: transparent;
+      font-size: 12px;
+    }
+    .bank-details {
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .bank-details table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .bank-details td {
+      padding: 5px;
+      vertical-align: top;
+      border: 1px solid #000;
+      font-size: 12px;
+    }
+    .bank-details .bank-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .bank-details .bank-line {
+      margin-bottom: 3px;
+      display: flex;
+    }
+    .bank-details .bank-label {
+      min-width: 70px;
+      font-weight: bold;
+    }
+    .declaration {
+      margin-bottom: 10px;
+      font-size: 12px;
+      border: 1px solid #000;
+      padding: 8px;
+      min-height: 70px;
+    }
+    .signature {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 12px;
+    }
+    input, textarea {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+    .address-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      margin-bottom: 3px;
+      resize: none;
+      font-size: 12px;
+    }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .button-group {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    button:hover {
+      background-color: #e0e0e0;
+    }
+    .print-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .print-btn:hover {
+      background-color: #45a049;
+    }
+    .clear-btn {
+      background-color: #f44336;
+      color: white;
+    }
+    .clear-btn:hover {
+      background-color: #d32f2f;
+    }
+@media print {
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 10px;
+  }
+  .invoice-container {
+    border: none;
+    padding: 5px;
+    margin: 0;
+    width: 100%;
+    font-size: 10px;
+  }
+  input, textarea {
+    border: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    font-size: 10px;
+  }
+  .items-table th, .items-table td {
+    padding: 3px;
+    font-size: 10px;
+  }
+  .address-box {
+    min-height: 90px;
+  }
+  .button-container {
+    display: none;
+  }
+  /* Add this new rule to hide delete buttons */
+  .items-table button.clear-btn {
+    display: none !important;
+  }
+
+  .items-table th:nth-child(7),
+  .items-table td:nth-child(7) {
+    display: none;
+  }
+
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <div class="header">
+      <h1><input type="text" placeholder="TAX INVOICE" style="text-align: center; width: 100%; border: none; text-decoration: underline;"></h1>
+      <h2><input type="text" placeholder="COMPANY NAME" style="text-align: center; width: 100%; border: none;"></h2>
+      <p><input type="text" placeholder="ADDRESS LINE 1" style="text-align: center; width: 100%; border: none;"></p>
+      <p><input type="text" placeholder="ADDRESS LINE 2" style="text-align: center; width: 100%; border: none;"></p>
+    </div>
+
+    <div class="gst-info">
+      <span>GST IN: <input type="text" placeholder="GST NUMBER" style="width: 150px; border: none;"></span>
+      <span>MOBILE: <input type="text" placeholder="MOBILE NUMBER" style="width: 100px; border: none;"></span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="invoice-info">
+      <table>
+        <tr>
+          <td>INVOICE NO</td>
+          <td><input type="text" id="invoiceNo" placeholder="INVOICE NUMBER" style="width: 100%;"></td>
+          <td>PAYMENT</td>
+          <td><input type="text" id="paymentTerms" placeholder="PAYMENT TERMS" style="width: 100%;"></td>
+        </tr>
+        <tr>
+          <td>INVOICE DATE</td>
+          <td><input type="date" id="invoiceDate" placeholder="INVOICE DATE" style="width: 100%;"></td>
+          <td>DUE DATE</td>
+          <td><input type="date" id="dueDate" placeholder="DUE DATE" style="width: 100%;"></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="address-section">
+      <div class="address-box">
+        <p><strong>BILLED TO</strong></p>
+        <textarea class="address-input" id="billedTo" rows="3" placeholder="BILLING ADDRESS"></textarea>
+        <p>GSTIN: <input type="text" id="billedToGST" placeholder="CUSTOMER GST NUMBER" style="width: 150px;"></p>
+        <p>AGENT: <input type="text" id="agent" placeholder="AGENT NAME" style="width: 200px;"></p>
+      </div>
+      <div class="address-box">
+        <p><strong>DELIVERED TO</strong></p>
+        <textarea class="address-input" id="deliveredTo" rows="3" placeholder="DELIVERY ADDRESS"></textarea>
+        <p>GST IN: <input type="text" id="deliveredToGST" placeholder="DELIVERY GST NUMBER" style="width: 150px;"></p>
+        <p>STATE: <input type="text" id="deliveryState" placeholder="STATE" style="width: 150px;"></p>
+      </div>
+    </div>
+
+    <table class="items-table" id="invoiceTable">
+      <thead>
+        <tr>
+          <th style="width: 5%;">S.No</th>
+          <th style="width: 40%;">Description of goods</th>
+          <th style="width: 10%;">HSN code</th>
+          <th style="width: 15%;">Qty kg/Mtr</th>
+          <th style="width: 10%;">Rate</th>
+          <th style="width: 15%;">Amount</th>
+          <th style="width: 5%;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody">
+        <tr>
+          <td>1</td>
+          <td>
+            <input type="text" placeholder="ITEM DESCRIPTION">
+            <br>
+            <input type="text" placeholder="ADDITIONAL DETAILS">
+            <br>
+            <input type="text" placeholder="BATCH/SERIAL NUMBERS">
+          </td>
+          <td><input type="text" placeholder="HSN CODE" style="text-align: center;"></td>
+          <td>
+            <div class="qty-details">
+              <span>Metre:</span>
+              <input type="number" class="gross-qty" placeholder="0.00" step="0.01">
+            </div>
+            <div class="qty-details">
+              <span>3cm less:</span>
+              <input type="number" class="partial-qty" placeholder="0.00" step="0.01">
+            </div>
+            <div class="qty-details">
+              <span>Final mtr:</span>
+              <input type="number" class="final-qty" placeholder="0.00" step="0.01">
+            </div>
+          </td>
+          <td><input type="number" class="rate" placeholder="0.00" step="0.01" style="text-align: right;"></td>
+          <td><input type="number" class="amount" placeholder="0.00" readonly style="text-align: right;"></td>
+          <td><button onclick="removeRow(this)" class="clear-btn">X</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="totals-table">
+      <tr>
+        <td class="label">TAXABLE AMOUNT</td>
+        <td><input type="number" id="taxableAmount" value="0" readonly></td>
+      </tr>
+      <tr>
+        <td class="label">CGST 2.5%</td>
+        <td><input type="number" id="cgst" value="0" readonly></td>
+      </tr>
+      <tr>
+        <td class="label">SGST 2.5%</td>
+        <td><input type="number" id="sgst" value="0" readonly></td>
+      </tr>
+      <tr>
+        <td class="label">IGST 5%</td>
+        <td><input type="number" id="igst" value="0" readonly></td>
+      </tr>
+      <tr>
+        <td class="label">ROUND OFF</td>
+        <td><input type="number" id="roundOff" value="0" readonly></td>
+      </tr>
+      <tr>
+        <td class="label">NET AMOUNT</td>
+        <td><input type="number" id="netAmount" value="0" readonly></td>
+      </tr>
+    </table>
+
+    <div class="amount-in-words">
+      Amount: <input type="text" id="amountInWords" placeholder="AMOUNT IN WORDS" value=" Zero Only">
+    </div>
+
+    <div class="bank-details">
+      <table>
+        <tr>
+          <td style="width: 40%;">
+            <div class="bank-info">
+              <div class="bank-line"><span class="bank-label">A/C NO:</span> <input type="text" id="accountNo" placeholder="ACCOUNT NUMBER" style="border: none; background: transparent;"></div>
+              <div class="bank-line"><span class="bank-label">BANK NAME:</span> <input type="text" id="bankName" placeholder="BANK NAME" style="border: none; background: transparent;"></div>
+              <div class="bank-line"><span class="bank-label">NAME:</span> <input type="text" id="accountName" placeholder="ACCOUNT HOLDER NAME" style="border: none; background: transparent;"></div>
+              <div class="bank-line"><span class="bank-label">BRANCH:</span> <input type="text" id="branch" placeholder="BRANCH NAME" style="border: none; background: transparent;"></div>
+              <div class="bank-line"><span class="bank-label">IFSC CODE:</span> <input type="text" id="ifscCode" placeholder="IFSC CODE" style="border: none; background: transparent;"></div>
+            </div>
+          </td>
+          <td>
+            <div class="declaration">
+              <strong>Declaration</strong><br>
+              Certified that the particulars given above are true and correct and the amount indicated represents the price actually charged and that there is no flow of additional consideration directly or indirectly from the buyer.
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="signature">
+      <p>For <input type="text" id="companyName" placeholder="COMPANY NAME" style="border: none; background: transparent;"></p>
+      <p><input type="text" id="authorizedBy" placeholder="AUTHORIZED SIGNATORY" style="border: none; background: transparent;"></p>
+    </div>
+
+    <div class="button-container">
+      <div class="button-group">
+        <button class="print-btn" onclick="window.print()">Print Invoice</button>
+        <button class="print-btn" onclick="generatePDF()">Download PDF</button>
+        <button onclick="addRow()" style="background-color: #45a049; color:white;">Add Item</button>
+      </div>
+      <button class="clear-btn" onclick="clearForm()">Clear Form</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Calculate amounts when quantity or rate changes
+      document.querySelectorAll('.gross-qty, .partial-qty, .final-qty, .rate').forEach(input => {
+        input.addEventListener('input', calculateAmounts);
+      });
+    });
+
+    function numberToWords(num) {
+      if (num === 0) return ' Zero Only';
+      
+      const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+                'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+      function inWords(num) {
+        if (num < 20) return a[num];
+        if (num < 100) return b[Math.floor(num / 10)] + (num % 10 ? " " + a[num % 10] : "");
+        if (num < 1000) return a[Math.floor(num / 100)] + " Hundred" + (num % 100 ? " And " + inWords(num % 100) : "");
+        if (num < 100000) return inWords(Math.floor(num / 1000)) + " Thousand" + (num % 1000 ? " " + inWords(num % 1000) : "");
+        if (num < 10000000) return inWords(Math.floor(num / 100000)) + " Lakh" + (num % 100000 ? " " + inWords(num % 100000) : "");
+        return inWords(Math.floor(num / 10000000)) + " Crore" + (num % 10000000 ? " " + inWords(num % 10000000) : "");
+      }
+      return ' ' + inWords(Math.floor(num)) + ' Only';
+    }
+
+    function calculateAmounts() {
+      const rows = document.querySelectorAll('#itemsBody tr');
+      let totalAmount = 0;
+      
+      rows.forEach(row => {
+        const finalQty = parseFloat(row.querySelector('.final-qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.rate').value) || 0;
+        const amount = finalQty * rate;
+        
+        row.querySelector('.amount').value = amount.toFixed(2);
+        totalAmount += amount;
+      });
+      
+      document.getElementById('taxableAmount').value = totalAmount.toFixed(2);
+      
+      const cgst = totalAmount * 0.025;
+      const sgst = totalAmount * 0.025;
+      document.getElementById('cgst').value = cgst.toFixed(2);
+      document.getElementById('sgst').value = sgst.toFixed(2);
+      
+      const netAmount = totalAmount + cgst + sgst;
+      const roundedAmount = Math.round(netAmount);
+      const roundOff = roundedAmount - netAmount;
+      
+      document.getElementById('roundOff').value = roundOff.toFixed(2);
+      document.getElementById('netAmount').value = roundedAmount.toFixed(2);
+      
+      document.getElementById('amountInWords').value = numberToWords(roundedAmount);
+    }
+
+    function addRow() {
+      const tbody = document.getElementById('itemsBody');
+      const newRow = document.createElement('tr');
+      
+      newRow.innerHTML = `
+        <td></td>
+        <td>
+          <input type="text" placeholder="ITEM DESCRIPTION">
+          <br>
+          <input type="text" placeholder="ADDITIONAL DETAILS">
+          <br>
+          <input type="text" placeholder="BATCH/SERIAL NUMBERS">
+        </td>
+        <td><input type="text" placeholder="HSN CODE" style="text-align: center;"></td>
+        <td>
+          <div class="qty-details">
+            <span>Metre:</span>
+            <input type="number" class="gross-qty" placeholder="0.00" step="0.01">
+          </div>
+          <div class="qty-details">
+            <span>3cm less:</span>
+            <input type="number" class="partial-qty" placeholder="0.00" step="0.01">
+          </div>
+          <div class="qty-details">
+            <span>Final mtr:</span>
+            <input type="number" class="final-qty" placeholder="0.00" step="0.01">
+          </div>
+        </td>
+        <td><input type="number" class="rate" placeholder="0.00" step="0.01" style="text-align: right;"></td>
+        <td><input type="number" class="amount" placeholder="0.00" readonly style="text-align: right;"></td>
+        <td><button onclick="removeRow(this)" class="clear-btn">X</button></td>
+      `;
+      
+      tbody.appendChild(newRow);
+      
+      // Add event listeners for the new row
+      newRow.querySelectorAll('.gross-qty, .partial-qty, .final-qty, .rate').forEach(input => {
+        input.addEventListener('input', calculateAmounts);
+      });
+      
+      updateSerialNumbers();
+    }
+
+    function removeRow(button) {
+      const tbody = document.getElementById('itemsBody');
+      if (tbody.children.length > 1) {
+        button.closest('tr').remove();
+        updateSerialNumbers();
+        calculateAmounts();
+      } else {
+        alert("At least one row must remain.");
+      }
+    }
+
+    function updateSerialNumbers() {
+      const rows = document.querySelectorAll('#itemsBody tr');
+      rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+      });
+    }
+
+    function clearForm() {
+      // Clear all input fields
+      document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(input => {
+        input.value = '';
+      });
+      
+      // Reset calculated fields
+      document.getElementById('taxableAmount').value = '0';
+      document.getElementById('cgst').value = '0';
+      document.getElementById('sgst').value = '0';
+      document.getElementById('igst').value = '0';
+      document.getElementById('roundOff').value = '0';
+      document.getElementById('netAmount').value = '0';
+      document.getElementById('amountInWords').value = 'Rupees Zero Only';
+      
+      // Reset to one row
+      const tbody = document.getElementById('itemsBody');
+      tbody.innerHTML = `
+        <tr>
+          <td>1</td>
+          <td>
+            <input type="text" placeholder="ITEM DESCRIPTION">
+            <br>
+            <input type="text" placeholder="ADDITIONAL DETAILS">
+            <br>
+            <input type="text" placeholder="BATCH/SERIAL NUMBERS">
+          </td>
+          <td><input type="text" placeholder="HSN CODE" style="text-align: center;"></td>
+          <td>
+            <div class="qty-details">
+              <span>Metre:</span>
+              <input type="number" class="gross-qty" placeholder="0.00" step="0.01">
+            </div>
+            <div class="qty-details">
+              <span>3cm less:</span>
+              <input type="number" class="partial-qty" placeholder="0.00" step="0.01">
+            </div>
+            <div class="qty-details">
+              <span>Final mtr:</span>
+              <input type="number" class="final-qty" placeholder="0.00" step="0.01">
+            </div>
+          </td>
+          <td><input type="number" class="rate" placeholder="0.00" step="0.01" style="text-align: right;"></td>
+          <td><input type="number" class="amount" placeholder="0.00" readonly style="text-align: right;"></td>
+          <td><button onclick="removeRow(this)" class="clear-btn">X</button></td>
+        </tr>
+      `;
+      
+      // Re-add event listeners
+      document.querySelectorAll('.gross-qty, .partial-qty, .final-qty, .rate').forEach(input => {
+        input.addEventListener('input', calculateAmounts);
+      });
+    }
+
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFontSize(16);
+      doc.text(document.querySelector('.header h1 input').value || 'TAX INVOICE', 105, 15, { align: 'center' });
+
+      doc.setFontSize(14);
+      doc.text(document.querySelector('.header h2 input').value || '', 105, 22, { align: 'center' });
+
+      doc.setFontSize(10);
+      const addressInputs = document.querySelectorAll('.header p input');
+      doc.text(addressInputs[0].value || '', 105, 29, { align: 'center' });
+      doc.text(addressInputs[1].value || '', 105, 35, { align: 'center' });
+
+      // GST Info
+      const gstInput = document.querySelector('.gst-info input');
+      const mobileInput = document.querySelectorAll('.gst-info input')[1];
+      doc.text(`GST IN: ${gstInput.value || ''} | MOBILE: ${mobileInput.value || ''}`, 14, 45);
+
+      // Invoice Info
+      doc.text(`Invoice No: ${document.getElementById('invoiceNo').value || ''}`, 14, 55);
+      doc.text(`Date: ${document.getElementById('invoiceDate').value || ''}`, 14, 60);
+      doc.text(`Payment: ${document.getElementById('paymentTerms').value || ''}`, 100, 55);
+
+      // Addresses
+      doc.text('BILLED TO:', 14, 70);
+      const billedLines = document.getElementById('billedTo').value.split('\n');
+      billedLines.forEach((line, i) => doc.text(line, 14, 75 + (i * 5)));
+      doc.text(`GSTIN: ${document.getElementById('billedToGST').value || ''}`, 14, 90);
+      doc.text(`AGENT: ${document.getElementById('agent').value || ''}`, 14, 95);
+
+      doc.text('DELIVERED TO:', 100, 70);
+      const deliveredLines = document.getElementById('deliveredTo').value.split('\n');
+      deliveredLines.forEach((line, i) => doc.text(line, 100, 75 + (i * 5)));
+      doc.text(`GST IN: ${document.getElementById('deliveredToGST').value || ''}`, 100, 90);
+
+      // Items Table
+      const rows = document.querySelectorAll('#itemsBody tr');
+      const data = [];
+      
+      rows.forEach((row, index) => {
+        const descriptions = Array.from(row.querySelectorAll('td:nth-child(2) input')).map(input => input.value).join(' ');
+        data.push([
+          index + 1,
+          descriptions,
+          row.querySelector('td:nth-child(3) input').value || '',
+          row.querySelector('.final-qty').value || '',
+          row.querySelector('.rate').value || '',
+          row.querySelector('.amount').value || ''
+        ]);
+      });
+
+      doc.autoTable({
+        head: [['S.No', 'Description', 'HSN', 'Final Qty', 'Rate', 'Amount']],
+        body: data,
+        startY: 100,
+        headStyles: { 
+          fillColor: [44, 62, 80],
+          textColor: 255,
+          fontSize: 8
+        },
+        bodyStyles: {
+          fontSize: 8,
+          cellPadding: 3
+        }
+      });
+
+      // Totals
+      const finalY = doc.lastAutoTable.finalY + 10;
+      doc.setFontSize(9);
+      doc.text(`TAXABLE AMOUNT: ₹${document.getElementById('taxableAmount').value || '0'}`, 150, finalY);
+      doc.text(`CGST 2.5%: ₹${document.getElementById('cgst').value || '0'}`, 150, finalY + 5);
+      doc.text(`SGST 2.5%: ₹${document.getElementById('sgst').value || '0'}`, 150, finalY + 10);
+      doc.text(`ROUND OFF: ₹${document.getElementById('roundOff').value || '0'}`, 150, finalY + 15);
+      doc.text(`NET AMOUNT: ₹${document.getElementById('netAmount').value || '0'}`, 150, finalY + 20);
+
+      // Amount in words
+      doc.text('Amount:', 14, finalY + 5);
+      doc.text(document.getElementById('amountInWords').value || 'Rupees Zero Only', 14, finalY + 10, { maxWidth: 100 });
+
+      // Bank Details
+      doc.text('Bank Details:', 14, finalY + 20);
+      doc.text(`A/C NO: ${document.getElementById('accountNo').value || ''}`, 14, finalY + 25);
+      doc.text(`BANK: ${document.getElementById('bankName').value || ''}`, 14, finalY + 30);
+      doc.text(`BRANCH: ${document.getElementById('branch').value || ''}`, 14, finalY + 35);
+      doc.text(`IFSC: ${document.getElementById('ifscCode').value || ''}`, 14, finalY + 40);
+
+      // Declaration
+      doc.text('Declaration:', 100, finalY + 20);
+      doc.text(document.querySelector('.declaration').textContent.replace('Declaration', '').trim(), 100, finalY + 25, { maxWidth: 80 });
+
+      // Signature
+      doc.text(`For ${document.getElementById('companyName').value || ''}`, 150, finalY + 50);
+      doc.text(document.getElementById('authorizedBy').value || '', 150, finalY + 55);
+
+      doc.save(`Invoice_${document.getElementById('invoiceNo').value || 'TAX_INVOICE'}.pdf`);
+    }
+  </script>
+</body>
+</html>
