@@ -236,50 +236,145 @@
     .clear-btn:hover {
       background-color: #d32f2f;
     }
-@media print {
-  body {
-    padding: 0;
-    margin: 0;
-    font-size: 10px;
-  }
-  .invoice-container {
-    border: none;
-    padding: 5px;
-    margin: 0;
-    width: 100%;
-    font-size: 10px;
-  }
-  input, textarea {
-    border: none !important;
-    appearance: none;
-    -webkit-appearance: none;
-    font-size: 10px;
-  }
-  .items-table th, .items-table td {
-    padding: 3px;
-    font-size: 10px;
-  }
-  .address-box {
-    min-height: 90px;
-  }
-  .button-container {
-    display: none;
-  }
-  /* Add this new rule to hide delete buttons */
-  .items-table button.clear-btn {
-    display: none !important;
-  }
 
-  .items-table th:nth-child(7),
-  .items-table td:nth-child(7) {
-    display: none;
-  }
+    /* Mobile-specific styles */
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 5px;
+        font-size: 11px;
+      }
+      
+      .invoice-container {
+        padding: 8px;
+        border: none;
+      }
+      
+      .header h1 {
+        font-size: 18px;
+      }
+      
+      .header h2 {
+        font-size: 14px;
+      }
+      
+      .gst-info {
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px;
+      }
+      
+      .gst-info span {
+        display: flex;
+        justify-content: space-between;
+      }
+      
+      .invoice-info table {
+        display: block;
+      }
+      
+      .invoice-info tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 5px;
+      }
+      
+      .invoice-info td {
+        padding: 2px;
+      }
+      
+      .address-section {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .address-box {
+        min-height: auto;
+      }
+      
+      .items-table {
+        font-size: 10px;
+      }
+      
+      .items-table th, 
+      .items-table td {
+        padding: 3px;
+      }
+      
+      .items-table th:nth-child(3),
+      .items-table td:nth-child(3) {
+        display: none;
+      }
+      
+      .qty-details {
+        flex-direction: column;
+        gap: 2px;
+        align-items: flex-start;
+      }
+      
+      .qty-details input {
+        width: 60px;
+      }
+      
+      .button-container {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .button-group {
+        justify-content: space-between;
+      }
+      
+      button {
+        padding: 8px;
+        font-size: 11px;
+        flex: 1;
+      }
+    }
 
-  @page {
-    size: auto;
-    margin: 0mm;
-  }
-}
+    @media print {
+      body {
+        padding: 0;
+        margin: 0;
+        font-size: 10px;
+      }
+      .invoice-container {
+        border: none;
+        padding: 5px;
+        margin: 0;
+        width: 100%;
+        font-size: 10px;
+      }
+      input, textarea {
+        border: none !important;
+        appearance: none;
+        -webkit-appearance: none;
+        font-size: 10px;
+      }
+      .items-table th, .items-table td {
+        padding: 3px;
+        font-size: 10px;
+      }
+      .address-box {
+        min-height: 90px;
+      }
+      .button-container {
+        display: none;
+      }
+      /* Add this new rule to hide delete buttons */
+      .items-table button.clear-btn {
+        display: none !important;
+      }
+
+      .items-table th:nth-child(7),
+      .items-table td:nth-child(7) {
+        display: none;
+      }
+
+      @page {
+        size: auto;
+        margin: 0mm;
+      }
+    }
   </style>
 </head>
 <body>
@@ -443,10 +538,17 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Set today's date as default
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('invoiceDate').value = today;
+      
       // Calculate amounts when quantity or rate changes
       document.querySelectorAll('.gross-qty, .partial-qty, .final-qty, .rate').forEach(input => {
         input.addEventListener('input', calculateAmounts);
       });
+      
+      // Auto-focus first input for better mobile UX
+      document.querySelector('input').focus();
     });
 
     function numberToWords(num) {
@@ -538,6 +640,9 @@
       });
       
       updateSerialNumbers();
+      
+      // Focus on the first input of the new row for better mobile UX
+      newRow.querySelector('input').focus();
     }
 
     function removeRow(button) {
@@ -559,6 +664,10 @@
     }
 
     function clearForm() {
+      if (!confirm('Are you sure you want to clear the entire form?')) {
+        return;
+      }
+      
       // Clear all input fields
       document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(input => {
         input.value = '';
@@ -571,7 +680,11 @@
       document.getElementById('igst').value = '0';
       document.getElementById('roundOff').value = '0';
       document.getElementById('netAmount').value = '0';
-      document.getElementById('amountInWords').value = 'Rupees Zero Only';
+      document.getElementById('amountInWords').value = ' Zero Only';
+      
+      // Set today's date
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('invoiceDate').value = today;
       
       // Reset to one row
       const tbody = document.getElementById('itemsBody');
@@ -610,6 +723,9 @@
       document.querySelectorAll('.gross-qty, .partial-qty, .final-qty, .rate').forEach(input => {
         input.addEventListener('input', calculateAmounts);
       });
+      
+      // Focus on invoice number field
+      document.getElementById('invoiceNo').focus();
     }
 
     function generatePDF() {
